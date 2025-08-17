@@ -2,144 +2,56 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Hacker Terminal</title>
+  <title>Hacker Site</title>
   <style>
     body {
       margin: 0;
-      overflow: hidden;
+      height: 100vh;
       background: black;
       color: #00ff00;
       font-family: monospace;
+      overflow: hidden;
     }
-
     canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      background: black;
-    }
-
-    #terminal {
-      position: relative;
-      z-index: 1;
-      padding: 20px;
-      white-space: pre-wrap;
-      height: 90vh;
-      overflow-y: auto;
-    }
-
-    .input-line {
-      display: flex;
-    }
-
-    .prompt {
-      color: #0f0;
-      margin-right: 5px;
-    }
-
-    input {
-      background: black;
-      border: none;
-      color: #0f0;
-      font-family: monospace;
-      font-size: 16px;
-      outline: none;
-      flex-grow: 1;
+      display: block;
     }
   </style>
 </head>
 <body>
   <canvas id="matrix"></canvas>
-
-  <div id="terminal"></div>
-  <div class="input-line">
-    <span class="prompt">></span>
-    <input type="text" id="command" autofocus />
-  </div>
-
-  <!-- Sound effects -->
-  <audio id="typeSound" src="https://actions.google.com/sounds/v1/office/computer_keyboard_fast.ogg"></audio>
-  <audio id="enterSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
-
   <script>
-    // === Matrix Effect ===
-    const canvas = document.getElementById("matrix");
-    const ctx = canvas.getContext("2d");
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
     canvas.height = window.innerHeight;
     canvas.width = window.innerWidth;
 
-    const letters = "01ABCDEFGHIJKLMNOPQRSTUVWXYZあいうえおカキクケコ";
+    const letters = '01';
     const fontSize = 14;
     const columns = canvas.width / fontSize;
-    const drops = Array(Math.floor(columns)).fill(1);
+    const drops = [];
 
-    function drawMatrix() {
-      ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+    for (let x = 0; x < columns; x++) {
+      drops[x] = 1;
+    }
+
+    function draw() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#0F0";
-      ctx.font = fontSize + "px monospace";
+
+      ctx.fillStyle = '#0F0';
+      ctx.font = fontSize + 'px monospace';
 
       for (let i = 0; i < drops.length; i++) {
         const text = letters.charAt(Math.floor(Math.random() * letters.length));
         ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
         if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
           drops[i] = 0;
         }
         drops[i]++;
       }
     }
-    setInterval(drawMatrix, 50);
-
-    // === Terminal Commands ===
-    const terminal = document.getElementById('terminal');
-    const commandInput = document.getElementById('command');
-    const typeSound = document.getElementById('typeSound');
-    const enterSound = document.getElementById('enterSound');
-
-    const commands = {
-      help: "Available commands: help, about, skills, social, clear",
-      about: "This is a hacker-style demo website with Matrix effect + sound FX.",
-      skills: "Skills: HTML, CSS, JavaScript, Python, Matrix FX, Sound Design",
-      social: "GitHub: https://github.com/USERNAME\\nTwitter: https://twitter.com/USERNAME",
-      clear: "clear"
-    };
-
-    function print(text) {
-      terminal.innerHTML += text + "\\n";
-      terminal.scrollTop = terminal.scrollHeight;
-    }
-
-    // Play typing sound while typing
-    commandInput.addEventListener('input', () => {
-      typeSound.currentTime = 0;
-      typeSound.play();
-    });
-
-    commandInput.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') {
-        enterSound.currentTime = 0;
-        enterSound.play();
-
-        const cmd = commandInput.value.trim();
-        print("> " + cmd);
-        if (commands[cmd]) {
-          if (cmd === "clear") {
-            terminal.innerHTML = "";
-          } else {
-            print(commands[cmd]);
-          }
-        } else if (cmd) {
-          print("Unknown command: " + cmd);
-        }
-        commandInput.value = "";
-      }
-    });
-
-    print("Welcome to the Hacker Terminal Website!");
-    print("Type 'help' to see available commands.");
+    setInterval(draw, 33);
   </script>
 </body>
 </html>
